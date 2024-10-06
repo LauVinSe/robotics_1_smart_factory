@@ -15,8 +15,9 @@
         <surface>
           <friction>
             <ode>
-              <mu>1.0</mu>
-              <mu2>1.0</mu2>
+              <!-- Increased friction values -->
+              <mu>100.0</mu>    <!-- Primary friction -->
+              <mu2>50.0</mu2>  <!-- Secondary friction -->
             </ode>
           </friction>
         </surface>

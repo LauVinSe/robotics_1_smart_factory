@@ -22,7 +22,7 @@ def generate_launch_description():
     world = os.path.join(
         get_package_share_directory('warehouse_world'),
         'worlds',
-        'warehouse_world_compact.world'  # Replace with your actual world file name
+        'warehouse_world_groundless.world'  # Replace with your actual world file name
     )
 
     # Command to start the Gazebo server with the custom world
