@@ -1,0 +1,36 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/vincent/ros2_ws/install/turtlebot3_fake_node/include/**",
+        "/home/vincent/ros2_ws/install/turtlebot3_msgs/include/**",
+        "/home/vincent/ros2_ws/install/turtlebot3_gazebo/include/**",
+        "/home/vincent/ros2_ws/install/sjtu_drone_description/include/**",
+        "/home/vincent/ros2_ws/install/dynamixel_sdk/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/vincent/ros2_ws/src/DynamixelSDK/dynamixel_sdk/include/**",
+        "/home/vincent/ros2_ws/src/DynamixelSDK/dynamixel_sdk_examples/include/**",
+        "/home/vincent/ros2_ws/src/laserscan_listener/include/**",
+        "/home/vincent/ros2_ws/src/my_opencv_demo/include/**",
+        "/home/vincent/ros2_ws/src/pfms-ros/audibot/audibot_gazebo/include/**",
+        "/home/vincent/ros2_ws/src/pfms-ros/sjtu_drone/sjtu_drone_description/include/**",
+        "/home/vincent/ros2_ws/src/simple_image_subscriber/include/**",
+        "/home/vincent/ros2_ws/src/turtlebot3/turtlebot3_node/include/**",
+        "/home/vincent/ros2_ws/src/turtlebot3_simulations/turtlebot3_fake_node/include/**",
+        "/home/vincent/ros2_ws/src/turtlebot3_simulations/turtlebot3_gazebo/include/**",
+        "/home/vincent/ros2_ws/src/warehouse_world/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

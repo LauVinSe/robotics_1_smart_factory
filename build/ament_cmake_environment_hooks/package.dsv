@@ -1,0 +1,4 @@
+source;share/warehouse_world/local_setup.bash
+source;share/warehouse_world/local_setup.dsv
+source;share/warehouse_world/local_setup.sh
+source;share/warehouse_world/local_setup.zsh

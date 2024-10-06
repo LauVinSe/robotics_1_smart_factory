@@ -1,0 +1,162 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="simple_shelf">
+    <link name="link">
+
+      <!-- Bottom shelf -->
+      <visual name="bottom_shelf_visual">
+        <geometry>
+          <box>
+            <size>0.4 0.4 0.02</size> <!-- Width, Depth, Thickness (0.4x0.4 makes it square) -->
+          </box>
+        </geometry>
+        <pose>0 0 0.25 0 0 0</pose> <!-- Raise it slightly above the ground -->
+        <material>
+          <ambient>0.6 0.6 0.6 1.0</ambient>
+          <diffuse>0.7 0.7 0.7 1.0</diffuse>
+        </material>
+      </visual>
+      <collision name="bottom_shelf_collision">
+        <geometry>
+          <box>
+            <size>0.4 0.4 0.02</size> <!-- Same size as the visual -->
+          </box>
+        </geometry>
+        <pose>0 0 0.25 0 0 0</pose> <!-- Align with visual -->
+      </collision>
+
+      <!-- Middle shelf -->
+      <visual name="middle_shelf_visual">
+        <geometry>
+          <box>
+            <size>0.4 0.4 0.02</size> <!-- Width, Depth, Thickness -->
+          </box>
+        </geometry>
+        <pose>0 0 0.5 0 0 0</pose> <!-- Middle shelf position -->
+        <material>
+          <ambient>0.6 0.6 0.6 1.0</ambient>
+          <diffuse>0.7 0.7 0.7 1.0</diffuse>
+        </material>
+      </visual>
+      <collision name="middle_shelf_collision">
+        <geometry>
+          <box>
+            <size>0.4 0.4 0.02</size> <!-- Same size as the visual -->
+          </box>
+        </geometry>
+        <pose>0 0 0.5 0 0 0</pose> <!-- Align with visual -->
+      </collision>
+
+      <!-- Top shelf -->
+      <visual name="top_shelf_visual">
+        <geometry>
+          <box>
+            <size>0.4 0.4 0.02</size> <!-- Width, Depth, Thickness -->
+          </box>
+        </geometry>
+        <pose>0 0 0.9 0 0 0</pose> <!-- Top shelf position -->
+        <material>
+          <ambient>0.6 0.6 0.6 1.0</ambient>
+          <diffuse>0.7 0.7 0.7 1.0</diffuse>
+        </material>
+      </visual>
+      <collision name="top_shelf_collision">
+        <geometry>
+          <box>
+            <size>0.4 0.4 0.02</size> <!-- Same size as the visual -->
+          </box>
+        </geometry>
+        <pose>0 0 0.9 0 0 0</pose> <!-- Align with visual -->
+      </collision>
+
+      <!-- Left support -->
+      <visual name="left_support_visual">
+        <geometry>
+          <box>
+            <size>0.02 0.02 1.0</size> <!-- Thin vertical support (square support) -->
+          </box>
+        </geometry>
+        <pose>-0.21 -0.21 0.5 0 0 0</pose> <!-- Left-back support position -->
+        <material>
+          <ambient>0.3 0.3 0.3 1.0</ambient>
+          <diffuse>0.3 0.3 0.3 1.0</diffuse>
+        </material>
+      </visual>
+      <collision name="left_support_collision">
+        <geometry>
+          <box>
+            <size>0.02 0.02 1.0</size> <!-- Same size as the visual -->
+          </box>
+        </geometry>
+        <pose>-0.21 -0.21 0.5 0 0 0</pose> <!-- Align with visual -->
+      </collision>
+
+      <!-- Right support -->
+      <visual name="right_support_visual">
+        <geometry>
+          <box>
+            <size>0.02 0.02 1.0</size> <!-- Thin vertical support (square support) -->
+          </box>
+        </geometry>
+        <pose>0.21 -0.21 0.5 0 0 0</pose> <!-- Right-back support position -->
+        <material>
+          <ambient>0.3 0.3 0.3 1.0</ambient>
+          <diffuse>0.3 0.3 0.3 1.0</diffuse>
+        </material>
+      </visual>
+      <collision name="right_support_collision">
+        <geometry>
+          <box>
+            <size>0.02 0.02 1.0</size> <!-- Same size as the visual -->
+          </box>
+        </geometry>
+        <pose>0.21 -0.21 0.5 0 0 0</pose> <!-- Align with visual -->
+      </collision>
+
+      <!-- Front-left support -->
+      <visual name="front_left_support_visual">
+        <geometry>
+          <box>
+            <size>0.02 0.02 1.0</size> <!-- Thin vertical support (square support) -->
+          </box>
+        </geometry>
+        <pose>-0.21 0.21 0.5 0 0 0</pose> <!-- Left-front support position -->
+        <material>
+          <ambient>0.3 0.3 0.3 1.0</ambient>
+          <diffuse>0.3 0.3 0.3 1.0</diffuse>
+        </material>
+      </visual>
+      <collision name="front_left_support_collision">
+        <geometry>
+          <box>
+            <size>0.02 0.02 1.0</size> <!-- Same size as the visual -->
+          </box>
+        </geometry>
+        <pose>-0.21 0.21 0.5 0 0 0</pose> <!-- Align with visual -->
+      </collision>
+
+      <!-- Front-right support -->
+      <visual name="front_right_support_visual">
+        <geometry>
+          <box>
+            <size>0.02 0.02 1.0</size> <!-- Thin vertical support (square support) -->
+          </box>
+        </geometry>
+        <pose>0.21 0.21 0.5 0 0 0</pose> <!-- Right-front support position -->
+        <material>
+          <ambient>0.3 0.3 0.3 1.0</ambient>
+          <diffuse>0.3 0.3 0.3 1.0</diffuse>
+        </material>
+      </visual>
+      <collision name="front_right_support_collision">
+        <geometry>
+          <box>
+            <size>0.02 0.02 1.0</size> <!-- Same size as the visual -->
+          </box>
+        </geometry>
+        <pose>0.21 0.21 0.5 0 0 0</pose> <!-- Align with visual -->
+      </collision>
+
+    </link>
+  </model>
+</sdf>

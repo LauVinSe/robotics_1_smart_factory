@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <model name="warehouse_ground">
+    <static>true</static>
+    <link name="link">
+      <!-- Position the ground slightly above 0 to avoid flickering -->
+      <pose>0 0 0.01 0 0 0</pose> <!-- Raise the plane by 0.01 units -->
+      <collision name="collision">
+        <geometry>
+          <plane>
+            <normal>0 0 1</normal>
+            <size>25 25</size> <!-- Smaller ground plane -->
+          </plane>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <plane>
+            <normal>0 0 1</normal>
+            <size>25 25</size> <!-- Smaller ground plane -->
+          </plane>
+        </geometry>
+        <!-- Material set to a near-white color -->
+        <material>
+          <ambient>0.95 0.95 0.95 1.0</ambient>  <!-- Very light grey, almost white -->
+          <diffuse>0.95 0.95 0.95 1.0</diffuse>  <!-- Very light grey diffuse color -->
+          <specular>0.1 0.1 0.1 1.0</specular>   <!-- Subtle specular reflection -->
+          <emissive>0.0 0.0 0.0 1.0</emissive>   <!-- No emission -->
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>
