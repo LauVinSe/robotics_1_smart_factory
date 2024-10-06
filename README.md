@@ -39,8 +39,8 @@ After the build process is complete, source the workspace:
 ```bash
 source install/setup.bash 
 ```
-### Build the package
-Once the build is successful and the environment is sourced, you can run the package with the following commands.
+### Launch the Warehouse World
+Once the build is successful and the environment is sourced, you can launch the package with the following commands.
 ```bash
 ros2 launch warehouse_world warehouse_world.launch.py
 ```
