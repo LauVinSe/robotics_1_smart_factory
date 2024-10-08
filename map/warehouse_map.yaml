@@ -1,0 +1,7 @@
+free_thresh: 0.90
+negate: 0
+origin: [-5.500000, -6.500000, 0.0]
+resolution: 0.010000
+mode: trinary
+occupied_thresh: 0.95
+image: /home/vincent/ros2_ws/warehouse_map.pgm
