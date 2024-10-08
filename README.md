@@ -73,4 +73,4 @@ In terminal 2:
 ```bash
 ros2 run warehouse_world map_overlay
 ```
-
+Also, launch the RTAB as specified in the link above.
