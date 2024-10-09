@@ -26,7 +26,7 @@ find_package(OpenCV REQUIRED)
 # find_package(<dependency> REQUIRED)
 
 ## This is the executable
-add_executable(map_overlay src/test.cpp)
+add_executable(map_overlay src/map_overlay.cpp)
 
 ## TASK 5 - Add the package to the end of the dependencies
 ament_target_dependencies(map_overlay rclcpp std_msgs sensor_msgs nav_msgs tf2 tf2_ros tf2_geometry_msgs cv_bridge image_transport OpenCV)
