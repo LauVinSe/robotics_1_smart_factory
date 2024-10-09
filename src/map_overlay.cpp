@@ -6,155 +6,158 @@
 #include <image_transport/image_transport.hpp>
 #include <iostream>
 #include <chrono>
+#include <string>
 
 class ImageOverlayNode : public rclcpp::Node {
 public:
     ImageOverlayNode() : Node("image_overlay_node"), map_received_(false) {
         // Subscribe to the /map (OccupancyGrid) topic
-        occupancy_grid_subscription_ = this->create_subscription<nav_msgs::msg::OccupancyGrid>(
-            "/map", 10, std::bind(&ImageOverlayNode::mapCallback, this, std::placeholders::_1));
-
-        // Initialize the image publisher (use image_transport for better QoS options)
-        image_publisher_ = this->create_publisher<sensor_msgs::msg::Image>("/map_overlay", 10);
+        map_subscriber_ = this->create_subscription<nav_msgs::msg::OccupancyGrid>(
+            "/rtabmap/map", 10, std::bind(&ImageOverlayNode::mapCallback, this, std::placeholders::_1)
+        );
 
         // Load the second image from file
         file_image_ = cv::imread("/home/vincent/git/warehouse_world/map/warehouse_map.png");
         if (file_image_.empty()) {
             RCLCPP_ERROR(this->get_logger(), "Could not load the image from file.");
+        } else {
+            RCLCPP_INFO(this->get_logger(), "Image successfully loaded.");
         }
 
         // Create a timer to check if /map messages are being received
         timer_ = this->create_wall_timer(
-            std::chrono::seconds(5),
+            std::chrono::milliseconds(100),  // Check every 100 ms
             std::bind(&ImageOverlayNode::checkMapMessage, this)
         );
+
+        // Initialize the background image (black image) for overlay
+        background_image_ = cv::Mat::zeros(cv::Size(500, 500), CV_8UC3);  // Black background of size 500x500
     }
 
 private:
+
+    // Callback function for the /map subscriber
     void mapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg) {
-        occupancyGridToImage(msg);  // Convert occupancy grid to OpenCV image
-        map_received_ = true;  // Set the flag indicating we received a map
+        RCLCPP_INFO(this->get_logger(), "Received map data");
 
-        // Overlay the images only if both images are available
-        if (!file_image_.empty()) {
-            // Adjust contrast of both images
-            cv::Mat contrast_adjusted_map = adjustContrast(colouredImage_, 2.0, 0);  // Increase contrast of map
-            cv::Mat contrast_adjusted_static = adjustContrast(file_image_, 1.5, 20); // Adjust contrast of static image
+        // Set the flag indicating that a map has been received
+        map_received_ = true;
 
-            // Overlay images
-            cv::Mat result = overlayImages(contrast_adjusted_static, contrast_adjusted_map, 0.7);  // Adjust alpha value as needed
+        // Convert the OccupancyGrid data to OpenCV format
+        cv::Mat map_image = convertOccupancyGridToMat(msg);
 
-            // Display the result locally
-            cv::imshow("Overlay Result", result);
-            cv::waitKey(1);  // Display the result for a brief moment
+        // Resize both images to 500x500 pixels
+        cv::Mat resized_file_image, resized_map_image;
+        cv::resize(file_image_, resized_file_image, cv::Size(500, 500), 0, 0, cv::INTER_LINEAR);
+        cv::resize(map_image, resized_map_image, cv::Size(500, 500), 0, 0, cv::INTER_LINEAR);
 
-            // Publish the result image
-            publishOverlayImage(result);
+        // Ensure that both images have the same number of channels (convert grayscale to BGR)
+        if (resized_file_image.channels() == 1) {
+            cv::cvtColor(resized_file_image, resized_file_image, cv::COLOR_GRAY2BGR);
         }
+        if (resized_map_image.channels() == 1) {
+            cv::cvtColor(resized_map_image, resized_map_image, cv::COLOR_GRAY2BGR);
+        }
+
+        // Overlay the resized map image onto the background image
+        cv::Mat background_with_map = background_image_.clone();
+        overlayImageCentered(background_with_map, resized_map_image);
+        // cv::resize(background_with_map, background_with_map, cv::Size(500, 550), 0, 0, cv::INTER_LINEAR);
+
+        // Overlay the two images
+        cv::Mat blended_image;
+        double alpha = 0.5;  // Blending factor for file_image_
+        double beta = 1.0 - alpha;  // Blending factor for map_image
+        cv::addWeighted(resized_file_image, alpha, background_with_map, beta, 0.0, blended_image);
+
+        // Display each image in separate windows
+        cv::imshow(WINDOW_GT, resized_file_image);  // Ground truth image (resized to 500x500)
+        cv::imshow(WINDOW_SLAM, resized_map_image); // SLAM map image centered on background
+        cv::imshow(WINDOW_OVER, blended_image);     // Overlayed image
+
+        cv::waitKey(10);  // Allow OpenCV window to refresh
     }
 
-    void checkMapMessage() {
-        if (!map_received_) {
-            RCLCPP_WARN(this->get_logger(), "No messages received on the /map topic.");
+    // Function to overlay one image onto a black background, centering the overlay
+    void overlayImageCentered(cv::Mat &background, const cv::Mat &overlay) {
+        // Convert grayscale overlay to BGR if necessary
+        cv::Mat overlayBGR;
+        if (overlay.channels() == 1) {
+            cv::cvtColor(overlay, overlayBGR, cv::COLOR_GRAY2BGR);
         } else {
-            map_received_ = false;  // Reset the flag for the next check
+            overlayBGR = overlay;
+        }
+
+        // Calculate the position to center the overlay on the background
+        int x = (background.cols - overlayBGR.cols) / 2;
+        int y = (background.rows - overlayBGR.rows) / 2;
+
+        // Ensure the values of x and y are valid (greater than or equal to 0)
+        x = std::max(x, 0);
+        y = std::max(y, 0);
+
+        // Make sure the overlay fits within the background
+        for (int i = 0; i < overlayBGR.rows && y + i < background.rows; ++i) {
+            for (int j = 0; j < overlayBGR.cols && x + j < background.cols; ++j) {
+                cv::Vec3b &backgroundPixel = background.at<cv::Vec3b>(y + i, x + j);
+                cv::Vec3b overlayPixel = overlayBGR.at<cv::Vec3b>(i, j);
+
+                // Simply replace the background pixel with the overlay pixel
+                backgroundPixel = overlayPixel;
+            }
         }
     }
 
-    // Helper function to overlay two images
-    cv::Mat overlayImages(const cv::Mat& image1, const cv::Mat& image2, double alpha = 0.5) {
-        cv::Mat outputImage;
+    // Function to convert OccupancyGrid to OpenCV Mat
+    cv::Mat convertOccupancyGridToMat(const nav_msgs::msg::OccupancyGrid::SharedPtr msg) {
+        size_x = msg->info.width;
+        size_y = msg->info.height;
+        map_scale_ = msg->info.resolution;
+        origin_x = msg->info.origin.position.x;
+        origin_y = msg->info.origin.position.y;
 
-        // Ensure the images are of the same size
-        cv::Mat resizedImage2;
-        if (image1.size() != image2.size()) {
-            cv::resize(image2, resizedImage2, image1.size());
-        } else {
-            resizedImage2 = image2;
-        }
+        // Allocate an OpenCV matrix to store the map
+        cv::Mat map_image(size_y, size_x, CV_8UC1);  // Create a blank matrix for map
 
-        // Perform alpha blending
-        cv::addWeighted(image1, alpha, resizedImage2, 1.0 - alpha, 0.0, outputImage);
+        // Convert occupancy grid data into OpenCV format
+        for (int y = 0; y < size_y; ++y) {
+            for (int x = 0; x < size_x; ++x) {
+                int index = x + (size_y - y - 1) * size_x;  // Index in the OccupancyGrid data
+                int8_t data = msg->data[index];
 
-        return outputImage;
-    }
-
-    // Adjust contrast and brightness of an image
-    cv::Mat adjustContrast(const cv::Mat& input_image, double alpha, int beta) {
-        cv::Mat contrast_adjusted_image;
-        input_image.convertTo(contrast_adjusted_image, -1, alpha, beta);  // alpha is the contrast factor, beta is brightness
-        return contrast_adjusted_image;
-    }
-
-    // Convert OccupancyGrid to an OpenCV image (binary image, erosion, and color conversion)
-    void occupancyGridToImage(const nav_msgs::msg::OccupancyGrid::SharedPtr grid) {
-        int grid_data;
-        unsigned int row, col, val;
-
-        // Create a temporary image to store the map
-        m_temp_img = cv::Mat::zeros(grid->info.height, grid->info.width, CV_8UC1);
-
-        std::cout << "DataParse started for map: " << grid->header.stamp.sec
-                  << " Dim: " << grid->info.height << "x" << grid->info.width << std::endl;
-
-        // Parse the occupancy grid data
-        for (row = 0; row < grid->info.height; row++) {
-            for (col = 0; col < grid->info.width; col++) {
-                grid_data = grid->data[row * grid->info.width + col];
-                if (grid_data != -1) {
-                    val = 255 - (255 * grid_data) / 100;
-                    val = (val == 0) ? 255 : 0;
-                    m_temp_img.at<uchar>(grid->info.height - row - 1, col) = val;
+                if (data == -1) {  // Unknown space
+                    map_image.at<uchar>(y, x) = 127;  // Set pixel to gray
                 } else {
-                    m_temp_img.at<uchar>(grid->info.height - row - 1, col) = 0;
+                    map_image.at<uchar>(y, x) = 255 - data * 255 / 100;  // Set pixel to a scale based on occupancy
                 }
             }
         }
-
-        // Erode the image to remove noise
-        map_scale_ = grid->info.resolution;
-        origin_x = grid->info.origin.position.x;
-        origin_y = grid->info.origin.position.y;
-        size_x = grid->info.width;
-        size_y = grid->info.height;
-
-        // Create a kernel for erosion
-        cv::Mat kernel = (cv::Mat_<uchar>(3, 3) << 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        cv::erode(m_temp_img, binaryImage_, kernel);
-
-        // Convert the binary image to a color image and store it
-        colouredImage_.create(binaryImage_.size(), CV_8UC3);
-        cv::cvtColor(binaryImage_, colouredImage_, cv::COLOR_GRAY2BGR);
-
-        RCLCPP_INFO(this->get_logger(), "Occupancy grid map converted to a binary image");
+        return map_image;  // Return the OpenCV matrix
     }
 
-    // Function to publish the overlaid image
-    void publishOverlayImage(const cv::Mat& overlay_image) {
-        if (overlay_image.empty()) {
-            RCLCPP_WARN(this->get_logger(), "Overlay image is empty, not publishing.");
-            return;
+    // Timer callback to check if /map messages are being received
+    void checkMapMessage() {
+        if (!map_received_) {
+            RCLCPP_WARN(this->get_logger(), "No /map messages received yet.");
+        } else {
+            RCLCPP_INFO(this->get_logger(), "Map message has been received.");
         }
-
-        // Convert OpenCV Mat to ROS2 Image message
-        cv_bridge::CvImage cv_img;
-        cv_img.header.stamp = this->now();  // Set the timestamp
-        cv_img.encoding = "bgr8";           // Set the encoding (BGR format)
-        cv_img.image = overlay_image;       // Set the image
-
-        // Publish the image
-        sensor_msgs::msg::Image::SharedPtr msg = cv_img.toImageMsg();
     }
 
-    rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr occupancy_grid_subscription_;
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr image_publisher_;
+    // Subscriber to the /map topic
+    rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr map_subscriber_;
     rclcpp::TimerBase::SharedPtr timer_;  // Timer for checking if messages are received
     cv::Mat file_image_;
-    cv::Mat m_temp_img, binaryImage_, colouredImage_;
+    cv::Mat background_image_;  // Black background image (500x500)
     float map_scale_;
     float origin_x, origin_y;
     int size_x, size_y;
     bool map_received_;  // Flag to track if /map topic messages have been received
+
+    // Constants for window names
+    const std::string WINDOW_GT = "Map Ground Truth";
+    const std::string WINDOW_SLAM = "Map SLAM";
+    const std::string WINDOW_OVER = "Map Overlay";
 };
 
 int main(int argc, char** argv) {
