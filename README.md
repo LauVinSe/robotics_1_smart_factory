@@ -54,7 +54,9 @@ Create the required ground truth map using Gazebo map creator (follow the instru
 
 Tips: only take the 2D map and make sure the map fit closely.
 
-Then, modify the path inside the source code (**Might be updated later) to your path to the ground truth map. For example:
+Then, modify the path inside the source code (**Might be updated later) to your path to the ground truth map. 
+
+For example:
 ```bash
 /home/user/git/warehouse_world/map/map.png
 ```
