@@ -69,6 +69,7 @@ Launch the world and then run map_overlay node
 
 In terminal 1:
 ```bash
+export TURTLEBOT3_MODEL=waffle_pi
 ros2 launch warehouse_world warehouse_world.launch.py
 ```
 In terminal 2:
@@ -96,4 +97,21 @@ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=True
 ros2 launch nav2_bringup rviz_launch.py
 ```
 
+## Using Path Planning
+In terminal 1 open the world:
+```bash
+export TURTLEBOT3_MODEL=waffle_pi
+ros2 launch warehouse_world warehouse_world.launch.py
+```
+In terminal 2 open the map file. For example:
+```bash
+export TURTLEBOT3_MODEL=waffle_pi
+ros2 launch turtlebot3_navigation2 navigation2.launch.py map:=$HOME/git/warehouse_world/map/rtbmap/rtab_warehouse_map.yaml 
+```
+
+## Using Object tDetection
+Run the path Planning command in terminals. Then:
+```bash
+ros2 run warehouse_world object_detection
+```
 
