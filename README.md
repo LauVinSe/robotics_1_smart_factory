@@ -2,6 +2,7 @@
 
 This repository contains a ROS2 project focused on simulating a smart factory using autonomous mobile robots (TurtleBot). The project includes navigation, path planning, and interaction with the environment in a simulated Gazebo world.
 
+![warehouse](images/warehouse_index.png)
 ## Getting Started
 
 Follow the instructions below to clone this repository, build it using `colcon`, and run the package.
