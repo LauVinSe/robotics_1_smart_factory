@@ -21,15 +21,20 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(image_transport REQUIRED)
 find_package(OpenCV REQUIRED)
+find_package(visualization_msgs REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
 ## This is the executable
 add_executable(map_overlay src/map_overlay.cpp)
+add_executable(object_detection src/test.cpp)
+add_executable(compare_maps src/compare_maps.cpp)
 
 ## TASK 5 - Add the package to the end of the dependencies
 ament_target_dependencies(map_overlay rclcpp std_msgs sensor_msgs nav_msgs tf2 tf2_ros tf2_geometry_msgs cv_bridge image_transport OpenCV)
+ament_target_dependencies(object_detection rclcpp std_msgs sensor_msgs nav_msgs tf2 tf2_ros tf2_geometry_msgs cv_bridge image_transport OpenCV visualization_msgs)
+ament_target_dependencies(compare_maps rclcpp std_msgs sensor_msgs nav_msgs tf2 tf2_ros tf2_geometry_msgs cv_bridge image_transport OpenCV visualization_msgs)
 
 link_directories(
   ${GAZEBO_LIBRARY_DIRS}
@@ -64,6 +69,8 @@ install(DIRECTORY
 
 install(TARGETS
   map_overlay
+  object_detection
+  compare_maps
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)

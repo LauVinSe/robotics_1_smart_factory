@@ -1,0 +1,72 @@
+/*!
+
+*/
+
+// Without this gap between two Doxygen definitions, the last group does not get
+// populated properly for some reason.
+
+/*!
+
+
+<b>41068 Robotics Studio 1 - Spring 2024</b>
+
+@mainpage Warehouse for Smart Factory simulation
+
+\image html warehouse_index.png width=600px
+
+@section overview Overview
+This is the source code that contains the Smart Factory project. It includes the functionality to simulate a warehouse environment with a robot that can navigate and detect objects. The project is developed using ROS2 and OpenCV.
+
+This project consists of these nodes:
+- **ImageOverlayNode**: This node subscribes to an occupancy grid map from the `/rtabmap/map` topic, overlays the map onto a preloaded image, and displays the result using OpenCV.
+- **ObjectDetection**: This node uses laser scan data and AMCL (Adaptive Monte Carlo Localization) to detect objects in the environment. Detected objects are published as RViz markers and drawn onto images using OpenCV for visualization.
+- **ControllerNode** (TBA): This node controls the robot's movements and subscribes to various topics to effectively control the robot.
+- **MissionNode** (TBA): This node controls the mission planning and decides which goals to publish to the controller.
+
+
+@section brief_description Brief Description
+- **ImageOverlayNode**: 
+\image html imageOverlay.png width=600px
+  - This node subscribes to an occupancy grid map from the `/rtabmap/map` topic, overlays the map onto a preloaded image, and displays the result using OpenCV.
+  - The map is processed and displayed in separate windows: Ground Truth, SLAM Map, and Overlay.
+
+- **ObjectDetection**:
+\image html objectDetection.png width=600px
+  - This node uses laser scan data and AMCL (Adaptive Monte Carlo Localization) to detect objects in the environment.
+  - Detected objects are published as RViz markers and drawn onto images using OpenCV for visualization.
+  
+@section setup Setup and Execution
+To build and run the code:
+1. Build the package in ros2_ws:
+\verbatim
+  cd ros2_ws
+  colcon build --symlink-install --packages-select warehouse_world
+  source install/setup.bash
+\endverbatim
+
+2. Run the nodes:
+\verbatim
+   ros2 run warehouse_world <node_name>
+\endverbatim
+For exemple:
+\verbatim
+   ros2 run warehouse_world image_overlay
+   ros2 run warehouse_world object_detection
+\endverbatim
+
+@section details Details of Nodes
+
+@subsection image_overlay ImageOverlayNode
+- **Topic**: `/rtabmap/map`
+- **Functionality**: Receives an occupancy grid map, processes it into an OpenCV image, and overlays it on a preloaded map.
+- **Output**: Displays the map and overlay in separate OpenCV windows.
+  
+@subsection object_detection ObjectDetection
+- **Topics**: `/scan` (LaserScan), `/amcl_pose` (AMCL pose)
+- **Functionality**: Detects objects from laser scan segments and AMCL data, transforms object positions to global coordinates, and visualizes them using markers and images.
+- **Output**: Publishes markers for RViz and displays detected objects on an image.
+
+@n Developed by Laurentius Vincent Setiadharma
+@n Laurentius.V.Setiadharma@student.uts.edu.au
+
+*/
