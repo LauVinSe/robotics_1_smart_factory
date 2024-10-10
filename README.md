@@ -109,7 +109,7 @@ export TURTLEBOT3_MODEL=waffle_pi
 ros2 launch turtlebot3_navigation2 navigation2.launch.py map:=$HOME/git/warehouse_world/map/rtbmap/rtab_warehouse_map.yaml 
 ```
 
-## Using Object tDetection
+## Using Object Detection
 Run the path Planning command in terminals. Then:
 ```bash
 ros2 run warehouse_world object_detection
