@@ -75,4 +75,25 @@ In terminal 2:
 ```bash
 ros2 run warehouse_world map_overlay
 ```
-Also, launch the RTAB as specified in the link above.
+Also, launch the RTAB as specified in the link above or as bellow (in seperate terminal):
+```bash
+ros2 launch rtabmap_launch rtabmap.launch.py \
+   visual_odometry:=false \
+   frame_id:=base_footprint \
+   subscribe_scan:=true depth:=false \
+   approx_sync:=true \
+   odom_topic:=/odom \
+   scan_topic:=/scan \
+   qos:=2 \
+   args:="-d --RGBD/NeighborLinkRefining true --Reg/Strategy 1" \
+   use_sim_time:=true \
+   rviz:=true
+```
+```bash
+ros2 launch nav2_bringup navigation_launch.py use_sim_time:=True
+```
+```bash
+ros2 launch nav2_bringup rviz_launch.py
+```
+
+
