@@ -1,0 +1,176 @@
+locations:
+
+  ### ARRIVAL
+
+  ## Location of shelves in the entry point (where there are robot arm and conveyor)
+  entry_shelf_raw:
+    position:
+      x: -1.5  # for all position of the shelf it will be + or - 1 meter from the actual shelf location
+      y: -5.5  # The adjusted value will have (adj) next to it
+      z: 0.0
+    orientation:
+      yaw: 180  # yaw in degrees (converted from ~180 radians)
+
+  entry_shelf_half:
+    position:
+      x: -0.5 # (adj)
+      y: -4.5
+      z: 0.0
+    orientation:
+      yaw: 180  # yaw in degrees (converted from ~180 radians)
+
+  entry_shelf_finished:
+    position:
+      x: -1.5 # (adj)
+      y: -3.5
+      z: 0.0
+    orientation:
+      yaw: 180  # yaw in degrees (converted from ~180 radians)
+
+  ## Location of shelves in the transit point (where the shelf is passed from mobile robot 1 to another)
+
+  # In Side (from the entry point)
+  # Left Side
+  transit_in_shelf_1:
+    position:
+      x: -2.5
+      y: -2.5 # (adj)
+      z: 0.0
+    orientation:
+      yaw: 90  # yaw in degrees (converted from ~1.57 radians)
+
+  transit_shelf_2:
+    position:
+      x: -1.5
+      y: -2.5 # (adj)
+      z: 0.0
+    orientation:
+      yaw: 90  # yaw in degrees (converted from ~1.57 radians)
+
+  # Right Side
+  transit_shelf_3:
+    position:
+      x: 1.5
+      y: -2.5 # (adj)
+      z: 0.0
+    orientation:
+      yaw: 90  # yaw in degrees (converted from ~1.57 radians)
+
+  transit_shelf_4:
+    position:
+      x: 2.5
+      y: -2.5 # (adj)
+      z: 0.0
+    orientation:
+      yaw: 90  # yaw in degrees (converted from ~1.57 radians)
+
+  # Out Side (from the entry point)
+  # Left Side
+  transit_in_shelf_1:
+    position:
+      x: -2.5
+      y: -0.5 # (adj)
+      z: 0.0
+    orientation:
+      yaw: -90  # yaw in degrees (converted from ~-1.57 radians)
+
+  transit_shelf_2:
+    position:
+      x: -1.5
+      y: -0.5 # (adj)
+      z: 0.0
+    orientation:
+      yaw: -90  # yaw in degrees (converted from ~-1.57 radians)
+
+  # Right Side
+  transit_shelf_3:
+    position:
+      x: 1.5
+      y: -0.5 # (adj)
+      z: 0.0
+    orientation:
+      yaw: -90  # yaw in degrees (converted from ~-1.57 radians)
+
+  transit_shelf_4:
+    position:
+      x: 2.5
+      y: -0.5 # (adj)
+      z: 0.0
+    orientation:
+      yaw: -90  # yaw in degrees (converted from ~-1.57 radians)
+
+  # Shelves location for shelf storage
+
+  storage_shelf_1:
+    position:
+      x: 1.5
+      y: -4.5 # (adj)
+      z: 0.0
+    orientation:
+      yaw: 90  # yaw in degrees (converted from ~1.57 radians)
+
+  storage_shelf_2:
+    position:
+      x: 2.5
+      y: -4.5 # (adj)
+      z: 0.0
+    orientation:
+      yaw: 90  # yaw in degrees (converted from ~1.57 radians)
+
+  storage_shelf_3:
+    position:
+      x: 1.5
+      y: -4.5 # (adj)
+      z: 0.0
+    orientation:
+      yaw: -90  # yaw in degrees (converted from ~-1.57 radians)
+
+  storage_shelf_4:
+    position:
+      x: 2.5
+      y: -4.5 # (adj)
+      z: 0.0
+    orientation:
+      yaw: -90  # yaw in degrees (converted from ~-1.57 radians)
+
+  ## Waypoint location for the arrival side
+
+  waypoint_arr_1:
+    position:
+      x: 0.0
+      y: -2.5
+      z: 0.0
+    orientation:
+      yaw: 0.0 # Right (0 radians)
+
+  waypoint_arr_2:
+    position:
+      x: 0.0
+      y: -2.5
+      z: 0.0
+    orientation:
+      yaw: 180  # Left (converted from ~3.14 radians)
+
+  waypoint_arr_3:
+    position:
+      x: 0.0
+      y: -4.5
+      z: 0.0
+    orientation:
+      yaw: 0.0 # Right (0 radians)
+
+  waypoint_arr_4:
+    position:
+      x: 0.0
+      y: -4.5
+      z: 0.0
+    orientation:
+      yaw: 180  # Left (converted from ~3.14 radians)
+
+  waypoint_arr_5:
+    position:
+      x: 3.5
+      y: -4.5
+      z: 0.0
+    orientation:
+      yaw: 180  # yaw in degrees (converted from ~3.14 radians)

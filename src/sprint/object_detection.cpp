@@ -62,6 +62,17 @@ public:
 private:
     void laserCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
     {
+        
+        /**
+         * @brief Callback function for the /scan subscriber.
+         * 
+         * This function is called whenever a new message is received on the /scan topic.
+         * It processes the laser scan data to detect segments and objects in the environment.
+         * The detected objects are published as visualization markers and drawn on an image.
+         * 
+         * @param msg The received LaserScan message.
+         */
+        
         // Only start detecting segments if AMCL data is collected
         if (!amcl_initialized_) {
             RCLCPP_WARN(this->get_logger(), "AMCL data not yet received. Waiting to start detection.");
@@ -106,6 +117,15 @@ private:
     // Callback for AMCL pose
     void amclCallback(const geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr amclMsg)
     {
+        /**
+         * @brief Callback function for the /amcl_pose subscriber.
+         * 
+         * This function is called whenever a new message is received on the /amcl_pose topic.
+         * It processes the AMCL pose data to extract the robot's position and orientation.
+         * 
+         * @param amclMsg The received PoseWithCovarianceStamped message.
+         */
+
         std::lock_guard<std::mutex> lock(amclMutex_);
         amcl_ = *amclMsg;
 
@@ -121,6 +141,15 @@ private:
 
     std::vector<Segment> detectSegments()
     {
+        /**
+         * @brief Detect segments in the laser scan data.
+         * 
+         * This function processes the laser scan data to detect segments based on the distance between points.
+         * It identifies segments based on the distance threshold and minimum number of points required.
+         * 
+         * @return std::vector<Segment> A vector of detected segments.
+         */
+        
         std::lock_guard<std::mutex> lock(laserMutex_);
         auto laserScan = laserScan_;
         laserMutex_.unlock();
@@ -230,6 +259,19 @@ private:
     }
 
     bool detectObjects(std::vector<Segment> segments, std::vector<ObjectStats>& objects) {
+
+        /**
+         * @brief Detect objects from the segments.
+         * 
+         * This function processes the detected segments to identify objects based on their circularity.
+         * It calculates the midpoint of each segment and checks if the segments belong to the same object.
+         * The function also calculates the average midpoint for each object.
+         * 
+         * @param segments The vector of detected segments.
+         * @param objects The vector of detected objects.
+         * @return bool True if objects are detected, false otherwise.
+         */
+
         double width = 0;
         double widthThreshold = 1.0;          // Maximum width for an object segment
         double sameObjectThreshold = 1.0;    // Threshold to determine if segments belong to the same object
@@ -323,6 +365,19 @@ private:
 
     // Function to check the circularity of a segment
     bool checkCircularity(const Segment& segment, const geometry_msgs::msg::Point& midpoint, double threshold) {
+
+        /**
+         * @brief Check the circularity of a segment.
+         * 
+         * This function calculates the distances of all points in the segment from the midpoint.
+         * It then calculates the mean distance and variance of the distances to determine circularity.
+         * 
+         * @param segment The segment to check for circularity.
+         * @param midpoint The midpoint of the segment.
+         * @param threshold The threshold for variance in distances.
+         * @return bool True if the segment is circular, false otherwise.
+         */
+
         std::vector<double> distances;
         double sum = 0.0;
 
@@ -351,6 +406,15 @@ private:
 
     geometry_msgs::msg::Point polarToCart(float range, float angle)
     {
+        /**
+         * @brief Convert polar coordinates to Cartesian coordinates.
+         * 
+         * This function converts polar coordinates (range and angle) to Cartesian coordinates (x, y).
+         * 
+         * @param range The range value from the laser scan.
+         * @param angle The angle value from the laser scan.
+         * @return geometry_msgs::msg::Point The Cartesian coordinates (x, y).
+         */
         geometry_msgs::msg::Point cart;
         cart.x = range * std::cos(angle);
         cart.y = range * std::sin(angle);
@@ -360,11 +424,29 @@ private:
 
     double calculateDistance(geometry_msgs::msg::Point p1, geometry_msgs::msg::Point p2)
     {
+        /**
+         * @brief Calculate the Euclidean distance between two points.
+         * 
+         * This function calculates the Euclidean distance between two points in 2D space.
+         * 
+         * @param p1 The first point.
+         * @param p2 The second point.
+         * @return double The Euclidean distance between the two points.
+         */
         return std::sqrt(std::pow(p1.x - p2.x, 2) + std::pow(p1.y - p2.y, 2));
     }
 
     geometry_msgs::msg::Point localToGlobal(geometry_msgs::msg::Point point, geometry_msgs::msg::PoseWithCovarianceStamped amcl_pose)
     {
+        /**
+         * @brief Convert local coordinates to global coordinates.
+         * 
+         * This function converts local coordinates to global coordinates based on the AMCL pose.
+         * 
+         * @param point The local point to convert.
+         * @param amcl_pose The AMCL pose for the robot.
+         * @return geometry_msgs::msg::Point The global point.
+         */
         geometry_msgs::msg::Point p;
         double yaw = tf2::getYaw(amcl_pose.pose.pose.orientation);
 
@@ -377,10 +459,28 @@ private:
 
     double angleConnectingPoints(geometry_msgs::msg::Point p1, geometry_msgs::msg::Point p2)
     {
+        /**
+         * @brief Calculate the angle between two points.
+         * 
+         * This function calculates the angle between two points in 2D space.
+         * 
+         * @param p1 The first point.
+         * @param p2 The second point.
+         * @return double The angle between the two points.
+         */
         return atan2(p2.y - p1.y, p2.x - p1.x);
     }
 
     visualization_msgs::msg::Marker produceMarkerPerson(geometry_msgs::msg::Point pt) {
+        /**
+         * @brief Produce a visualization marker for a person.
+         * 
+         * This function creates a visualization marker for a person at the specified point.
+         * The marker is a cylinder with a blue color and 50% transparency.
+         * 
+         * @param pt The point where the person is located.
+         * @return visualization_msgs::msg::Marker The visualization marker for the person.
+         */
         visualization_msgs::msg::Marker marker;
 
         // Set the frame ID and time stamp.
@@ -426,12 +526,32 @@ private:
     }
 
     cv::Point worldToPixel(double wx, double wy, double centerX, double centerY, double scale) {
-         int pixelX = static_cast<int>(centerX + (wx * 110));
-         int pixelY = static_cast<int>(centerY - (wy * 103)); // Inverting y-coordinate
+        /**
+         * @brief Convert world coordinates to pixel coordinates.
+         * 
+         * This function converts world coordinates to pixel coordinates based on the image scale.
+         * 
+         * @param wx The world x-coordinate.
+         * @param wy The world y-coordinate.
+         * @param centerX The center x-coordinate of the image.
+         * @param centerY The center y-coordinate of the image.
+         * @param scale The scale factor for conversion.
+         * @return cv::Point The pixel coordinates.
+         */
+        int pixelX = static_cast<int>(centerX + (wx * 110));
+        int pixelY = static_cast<int>(centerY - (wy * 103)); // Inverting y-coordinate
         return cv::Point(pixelX, pixelY);
     }
 
     void drawObjectsOnImage(geometry_msgs::msg::Point object) {
+        /**
+         * @brief Draw detected objects on an image.
+         * 
+         * This function loads an image, resizes it, and draws the detected objects on the image.
+         * The objects are represented as red circles on the image.
+         * 
+         * @param object The detected object to draw on the image.
+         */
         // Load the image
         cv::Mat image = cv::imread("/home/vincent/git/warehouse_world/map/warehouse_map.png", cv::IMREAD_COLOR);
         if (image.empty()) {

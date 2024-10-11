@@ -211,17 +211,17 @@ private:
     cv::Mat background_image_; ///< Black background image (500x500).
 
     // Map parameters
-    float map_scale_; ///< Scale factor of the map.
+    float map_scale_; //< Scale factor of the map.
     float origin_x, origin_y; ///< Origin of the map (x, y coordinates).
-    int size_x, size_y; ///< Size of the map in pixels (width, height).
+    int size_x, size_y; //< Size of the map in pixels (width, height).
 
     // Flag to track map reception
-    bool map_received_; ///< Flag indicating if /map messages have been received.
+    bool map_received_; //< Flag indicating if /map messages have been received.
 
     // Constants for window names
-    const std::string WINDOW_GT = "Map Ground Truth"; ///< Window name for ground truth map display.
-    const std::string WINDOW_SLAM = "Map SLAM"; ///< Window name for SLAM map display.
-    const std::string WINDOW_OVER = "Map Overlay"; ///< Window name for overlay map display.
+    const std::string WINDOW_GT = "Map Ground Truth"; //< Window name for ground truth map display.
+    const std::string WINDOW_SLAM = "Map SLAM"; //< Window name for SLAM map display.
+    const std::string WINDOW_OVER = "Map Overlay"; //< Window name for overlay map display.
 };
 
 int main(int argc, char** argv) {
