@@ -39,7 +39,7 @@ locations:
     orientation:
       yaw: 90  # yaw in degrees (converted from ~1.57 radians)
 
-  transit_shelf_2:
+  transit_in_shelf_2:
     position:
       x: -1.5
       y: -2.5 # (adj)
@@ -48,7 +48,7 @@ locations:
       yaw: 90  # yaw in degrees (converted from ~1.57 radians)
 
   # Right Side
-  transit_shelf_3:
+  transit_in_shelf_3:
     position:
       x: 1.5
       y: -2.5 # (adj)
@@ -56,7 +56,7 @@ locations:
     orientation:
       yaw: 90  # yaw in degrees (converted from ~1.57 radians)
 
-  transit_shelf_4:
+  transit_in_shelf_4:
     position:
       x: 2.5
       y: -2.5 # (adj)
@@ -66,7 +66,7 @@ locations:
 
   # Out Side (from the entry point)
   # Left Side
-  transit_in_shelf_1:
+  transit_out_shelf_1:
     position:
       x: -2.5
       y: -0.5 # (adj)
@@ -74,7 +74,7 @@ locations:
     orientation:
       yaw: -90  # yaw in degrees (converted from ~-1.57 radians)
 
-  transit_shelf_2:
+  transit_out_shelf_2:
     position:
       x: -1.5
       y: -0.5 # (adj)
@@ -83,7 +83,7 @@ locations:
       yaw: -90  # yaw in degrees (converted from ~-1.57 radians)
 
   # Right Side
-  transit_shelf_3:
+  transit_out_shelf_3:
     position:
       x: 1.5
       y: -0.5 # (adj)
@@ -91,7 +91,7 @@ locations:
     orientation:
       yaw: -90  # yaw in degrees (converted from ~-1.57 radians)
 
-  transit_shelf_4:
+  transit_out_shelf_4:
     position:
       x: 2.5
       y: -0.5 # (adj)

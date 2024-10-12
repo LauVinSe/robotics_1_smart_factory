@@ -5,7 +5,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# find dependencies
+# Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(gazebo_ros_pkgs REQUIRED)
 find_package(gazebo_ros REQUIRED)
@@ -25,11 +25,6 @@ find_package(visualization_msgs REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(nav2_msgs REQUIRED)
 find_package(yaml-cpp REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
-
-## This is the executable
 
 # For Sprint
 add_executable(map_overlay src/sprint/map_overlay.cpp)
@@ -40,28 +35,23 @@ ament_target_dependencies(map_overlay rclcpp std_msgs sensor_msgs nav_msgs tf2 t
 ament_target_dependencies(object_detection rclcpp std_msgs sensor_msgs nav_msgs tf2 tf2_ros tf2_geometry_msgs cv_bridge image_transport OpenCV visualization_msgs)
 ament_target_dependencies(compare_maps rclcpp std_msgs sensor_msgs nav_msgs tf2 tf2_ros tf2_geometry_msgs cv_bridge image_transport OpenCV visualization_msgs)
 
-# Project focused
+# Project-specific libraries
 add_library(location_manager src/location_manager.cpp)
-target_link_libraries(location_manager yaml-cpp)
-ament_target_dependencies(location_manager rclcpp geometry_msgs tf2 tf2_geometry_msgs)
+ament_target_dependencies(location_manager rclcpp geometry_msgs tf2 tf2_geometry_msgs yaml-cpp)  # Added yaml-cpp here
 
+add_library(robot_controller src/robot_controller.cpp)
+ament_target_dependencies(robot_controller rclcpp geometry_msgs tf2 tf2_geometry_msgs nav_msgs nav2_msgs rclcpp_action)
 
-link_directories(
-  ${GAZEBO_LIBRARY_DIRS}
-)
+# Test executables
+add_executable(robot_controller_test src/robot_controller_test.cpp)
+target_link_libraries(robot_controller_test location_manager robot_controller yaml-cpp)  # Corrected yaml-cpp
+ament_target_dependencies(robot_controller_test rclcpp geometry_msgs tf2 tf2_geometry_msgs nav_msgs nav2_msgs rclcpp_action)
+
+link_directories(${GAZEBO_LIBRARY_DIRS})
 
 include_directories(
   include
   ${GAZEBO_INCLUDE_DIRS}
-)
-
-set(dependencies
-  "geometry_msgs"
-  "nav_msgs"
-  "rclcpp"
-  "sensor_msgs"
-  "std_msgs"
-  "tf2"
 )
 
 # Install world files
@@ -78,19 +68,18 @@ install(TARGETS
   object_detection
   compare_maps
   location_manager
+  robot_controller_test
   DESTINATION lib/${PROJECT_NAME})
 
-  if(BUILD_TESTING)
+if(BUILD_TESTING)
 
   # Google Test
   find_package(ament_cmake_gtest REQUIRED)
 
   # GTest for LocationManager
   ament_add_gtest(test_location_manager test/test_location_manager.cpp)
-  target_link_libraries(test_location_manager yaml-cpp location_manager)
+  target_link_libraries(test_location_manager yaml-cpp location_manager yaml-cpp)
   ament_target_dependencies(test_location_manager rclcpp geometry_msgs tf2 tf2_geometry_msgs)
- 
-
 
 endif()
 
