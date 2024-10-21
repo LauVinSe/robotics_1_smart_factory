@@ -1,0 +1,6 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 50
+    actuator_joint_controller:
+      type: "position_controllers/JointPositionController"
+      joint: "actuator_joint"  # This is the prismatic joint you defined in the URDF
