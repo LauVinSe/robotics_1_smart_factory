@@ -98,6 +98,11 @@ ros2 launch nav2_bringup navigation_launch.py use_sim_time:=True
 ros2 launch nav2_bringup rviz_launch.py
 ```
 
+Saving the map from rtabmap use:
+```bash
+ros2 run nav2_map_server map_saver_cli -f my_saved_map --ros-args -r /map:=/rtabmap/map
+```
+
 ## Using Path Planning
 In terminal 1 open the world:
 ```bash
