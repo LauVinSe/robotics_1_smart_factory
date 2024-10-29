@@ -38,23 +38,33 @@ ament_target_dependencies(compare_maps rclcpp std_msgs sensor_msgs nav_msgs tf2 
 # Project-specific libraries
 add_library(location_manager src/location_manager.cpp)
 ament_target_dependencies(location_manager rclcpp geometry_msgs tf2 tf2_geometry_msgs yaml-cpp)  # Added yaml-cpp here
+target_link_libraries(location_manager yaml-cpp)
 
 add_library(robot_controller src/robot_controller.cpp)
 ament_target_dependencies(robot_controller rclcpp geometry_msgs tf2 tf2_geometry_msgs nav_msgs nav2_msgs rclcpp_action)
 
-# Test executables
+# New libraries for WarehouseManager and Alley
+add_library(warehouse_manager src/warehouse_manager.cpp)
+ament_target_dependencies(warehouse_manager rclcpp std_msgs)
+target_link_libraries(warehouse_manager yaml-cpp)  # Link yaml-cpp here if needed
+
+add_library(alley src/alley.cpp)
+ament_target_dependencies(alley rclcpp std_msgs)
+
+# Link the new libraries to the Robot Controller Test executable
 add_executable(robot_controller_test src/robot_controller_test.cpp)
-target_link_libraries(robot_controller_test location_manager robot_controller yaml-cpp)  # Corrected yaml-cpp
-ament_target_dependencies(robot_controller_test rclcpp geometry_msgs tf2 tf2_geometry_msgs nav_msgs nav2_msgs rclcpp_action)
+target_link_libraries(robot_controller_test location_manager robot_controller warehouse_manager alley yaml-cpp)
+ament_target_dependencies(robot_controller_test rclcpp geometry_msgs tf2 tf2_geometry_msgs nav_msgs nav2_msgs rclcpp_action yaml-cpp)
 
-link_directories(${GAZEBO_LIBRARY_DIRS})
-
+# Include directories for header files
 include_directories(
   include
   ${GAZEBO_INCLUDE_DIRS}
 )
 
-# Install world files
+link_directories(${GAZEBO_LIBRARY_DIRS})
+
+# Install directories
 install(DIRECTORY
   config  
   launch
@@ -68,19 +78,20 @@ install(TARGETS
   object_detection
   compare_maps
   location_manager
+  robot_controller
+  warehouse_manager
+  alley
   robot_controller_test
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
-
   # Google Test
   find_package(ament_cmake_gtest REQUIRED)
 
   # GTest for LocationManager
   ament_add_gtest(test_location_manager test/test_location_manager.cpp)
-  target_link_libraries(test_location_manager yaml-cpp location_manager yaml-cpp)
-  ament_target_dependencies(test_location_manager rclcpp geometry_msgs tf2 tf2_geometry_msgs)
-
+  target_link_libraries(test_location_manager yaml-cpp location_manager)  # Ensure yaml-cpp is linked here
+  ament_target_dependencies(test_location_manager rclcpp geometry_msgs tf2 tf2_geometry_msgs yaml-cpp)
 endif()
 
 ament_package()
