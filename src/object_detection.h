@@ -59,8 +59,6 @@ public:
 
     cv::Point worldToPixel(double wx, double wy, double centerX, double centerY, double scale);
 
-    void drawObjectsOnImage(geometry_msgs::msg::Point object);
-
 private:
 
     // Laser data
@@ -80,8 +78,7 @@ private:
     std::mutex laserMutex_;
 
     unsigned int objectCount_ = 0;
-
-    std::string map_png_path_ = "/home/samuel/ros2_ws/src/robotics_1_smart_factory/map/warehouse_map.png";
+    
 };
 
 #endif // OBJECT_DETECTION_H
