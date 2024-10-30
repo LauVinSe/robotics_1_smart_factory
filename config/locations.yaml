@@ -14,7 +14,7 @@ locations:
   ## Location of shelves in the entry point (where there are robot arm and conveyor)
   entry_shelf_raw:
     position:
-      x: -1.5  # for all position of the shelf it will be + or - 1 meter from the actual shelf location
+      x: -1.7  # for all position of the shelf it will be + or - 1 meter from the actual shelf location
       y: -5.5  # The adjusted value will have (adj) next to it
       z: 0.0
     orientation:
@@ -22,15 +22,23 @@ locations:
 
   entry_shelf_half:
     position:
-      x: -0.5 # (adj)
+      x: -0.7 # (adj)
       y: -4.5
       z: 0.0
     orientation:
       yaw: 180  # yaw in degrees (converted from ~180 radians)
+      
+  entry_shelf_half_rotated:
+    position:
+      x: -0.7 # (adj)
+      y: -4.5
+      z: 0.0
+    orientation:
+      yaw: 90  # yaw in degrees (converted from ~180 radians)
 
   entry_shelf_finished:
     position:
-      x: -1.5 # (adj)
+      x: -1.7 # (adj)
       y: -3.5
       z: 0.0
     orientation:
@@ -73,7 +81,7 @@ locations:
     orientation:
       yaw: 90  # yaw in degrees (converted from ~1.57 radians)
       
-   transit_in_shelf_5: #the one space in the middle
+  transit_in_shelf_5: #the one space in the middle
     position:
       x: -0.5
       y: -2.5 # (adj)
@@ -116,9 +124,9 @@ locations:
     orientation:
       yaw: 90  # yaw in degrees (converted from ~-1.57 radians)
       
-    transit_out_shelf_5: #the one space in the middle
+  transit_out_shelf_5: #the one space in the middle
     position:
-      x: 0
+      x: 0.0
       y: -0.5 # (adj)
       z: 0.0
     orientation:
@@ -196,16 +204,16 @@ locations:
 
   pickup_1:
     position:
-      x: -1.5
-      y: -4.5
+      x: -2.5
+      y: -5.5
       z: 0.0
     orientation:
       yaw: 180 # Left (converted from ~3.14 radians)
 
   pickup_2:
     position:
-      x: -2.5
-      y: -5.5
+      x: -1.5
+      y: -4.5
       z: 0.0
     orientation:
       yaw: 180  # Left (converted from ~3.14 radians)
@@ -262,7 +270,7 @@ locations:
     orientation:
       yaw: 90  # yaw in degrees (converted from ~-1.57 radians)
       
-   Delivering_3: #the one space in the middle
+  Delivering_3: #the one space in the middle
     position:
       x: 1.5
       y: -1.5 # (adj)
@@ -274,7 +282,7 @@ locations:
 
   waypoint_goal_1:
     position:
-      x: 3.5
+      x: 2.8
       y: 1.5
       z: 0.0
     orientation:
@@ -282,7 +290,7 @@ locations:
 
   waypoint_goal_2:
     position:
-      x: 0.0
+      x: -0.7
       y: 1.5
       z: 0.0
     orientation:
@@ -290,7 +298,7 @@ locations:
 
   waypoint_goal_3:
     position:
-      x: 0
+      x: 0.7
       y: 1.5
       z: 0.0
     orientation:
@@ -298,21 +306,267 @@ locations:
       
   waypoint_goal_4:
     position:
-      x: -3.5
+      x: -2.8
       y: 1.5
       z: 0.0
     orientation:
       yaw: 0    # Right
       
    ## Dropping the shelves in the storage
+   
+   
+   
+   # RAW SHELVES and Goals
 
-  goal_1:
+  Alley_RAW_shelf_0:
+    position:
+      x: 2.9
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 180 # Left (converted from ~3.14 radians)
+      
+  Alley_RAW_shelf_1:
+    position:
+      x: 2.9
+      y: 2.5
+      z: 0.0
+    orientation:
+      yaw: 180 # Left (converted from ~3.14 radians)
+      
+  Alley_RAW_shelf_2:
+    position:
+      x: 2.9
+      y: 3.5
+      z: 0.0
+    orientation:
+      yaw: 180 # Left (converted from ~3.14 radians)
+      
+  Alley_RAW_shelf_3:
+    position:
+      x: 2.9
+      y: 4.5
+      z: 0.0
+    orientation:
+      yaw: 180 # Left (converted from ~3.14 radians)
+      
+  Alley_RAW_shelf_4:
+    position:
+      x: 2.9
+      y: 5.5
+      z: 0.0
+    orientation:
+      yaw: 180 # Left (converted from ~3.14 radians)
+      
+  Alley_RAW_goal_0:
     position:
       x: 2.5
       y: 1.5
       z: 0.0
     orientation:
       yaw: 180 # Left (converted from ~3.14 radians)
+      
+  Alley_RAW_goal_1:
+    position:
+      x: 2.5
+      y: 2.5
+      z: 0.0
+    orientation:
+      yaw: 180 # Left (converted from ~3.14 radians)
+      
+  Alley_RAW_goal_2:
+    position:
+      x: 2.5
+      y: 3.5
+      z: 0.0
+    orientation:
+      yaw: 180 # Left (converted from ~3.14 radians)
+      
+  Alley_RAW_goal_3:
+    position:
+      x: 2.5
+      y: 4.5
+      z: 0.0
+    orientation:
+      yaw: 180 # Left (converted from ~3.14 radians)
+      
+  Alley_RAW_goal_4:
+    position:
+      x: 2.5
+      y: 5.5
+      z: 0.0
+    orientation:
+      yaw: 180 # Left (converted from ~3.14 radians)
+
+
+  ## HALF SHELVES and Goals
+    
+  Alley_HALF_shelf_0:
+    position:
+      x: 0.7
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+
+  Alley_HALF_shelf_1:
+    position:
+      x: 0.7
+      y: 2.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+      
+  Alley_HALF_shelf_2:
+    position:
+      x: 0.7
+      y: 3.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+      
+  Alley_HALF_shelf_3:
+    position:
+      x: 0.7
+      y: 4.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+      
+  Alley_HALF_shelf_4:
+    position:
+      x: 0.7
+      y: 5.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+      
+  Alley_HALF_goal_0:
+    position:
+      x: 1.5
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+      
+  Alley_HALF_goal_1:
+    position:
+      x: 1.5
+      y: 2.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+      
+  Alley_HALF_goal_2:
+    position:
+      x: 1.5
+      y: 3.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+      
+  Alley_HALF_goal_3:
+    position:
+      x: 1.5
+      y: 4.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+           
+  Alley_HALF_goal_4:
+    position:
+      x: 1.5
+      y: 5.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+
+
+
+  ## FINISHED SHELVES and Goals
+    
+  Alley_FINISHED_shelf_0:
+    position:
+      x: -2.9
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+
+  Alley_FINISHED_shelf_1:
+    position:
+      x: -2.9
+      y: 2.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+      
+  Alley_FINISHED_shelf_2:
+    position:
+      x: -2.9
+      y: 3.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+      
+  Alley_FINISHED_shelf_3:
+    position:
+      x: -2.9
+      y: 4.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+      
+  Alley_FINISHED_shelf_4:
+    position:
+      x: -2.9
+      y: 5.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+      
+  Alley_FINISHED_goal_0:
+    position:
+      x: -2.5
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+      
+  Alley_FINISHED_goal_1:
+    position:
+      x: -2.5
+      y: 2.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+      
+  Alley_FINISHED_goal_2:
+    position:
+      x: -2.5
+      y: 3.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+      
+  Alley_FINISHED_goal_3:
+    position:
+      x: -2.5
+      y: 4.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+           
+  Alley_FINISHED_goal_4:
+    position:
+      x: -2.5
+      y: 5.5
+      z: 0.0
+    orientation:
+      yaw: 0  # Left (converted from ~3.14 radians)
+
+
+
 
   goal_2:
     position:
@@ -376,7 +630,7 @@ locations:
 
   exit_1:
     position:
-      x: 3.5
+      x: 2.8
       y: 1.5
       z: 0.0
     orientation:
@@ -384,7 +638,7 @@ locations:
 
   exit_2:
     position:
-      x: 0.0
+      x: -0.7
       y: 1.5
       z: 0.0
     orientation:
@@ -392,7 +646,7 @@ locations:
 
   exit_3:
     position:
-      x: 0
+      x: 0.7
       y: 1.5
       z: 0.0
     orientation:
@@ -400,7 +654,7 @@ locations:
       
   exit_4:
     position:
-      x: -3.5
+      x: -2.8
       y: 1.5
       z: 0.0
     orientation:
