@@ -9,6 +9,7 @@
 #include "object_detection.h"
 
 using namespace std::chrono_literals;
+std::string map_png_path_ = "/home/samuel/ros2_ws/src/robotics_1_smart_factory/map/warehouse_map.png";
 
 class TurtleBotMoveToGoal : public rclcpp::Node
 {
@@ -80,8 +81,6 @@ private:
         std::lock_guard<std::mutex> lock1(amclMutex_);
         auto amcl_pose = amcl_;
         amclMutex_.unlock();
-        
-        ObjectDetection obs;
 
         // Detect segments in the laser scan data
         std::vector<Segment> segments = obs.detectSegments(laserScan_,amcl_pose);
@@ -106,7 +105,7 @@ private:
                 RCLCPP_INFO_STREAM(this->get_logger(), "Object at x: " << object.x << " y: " << object.y);
 
                 // Draw objects on the image
-                obs.drawObjectsOnImage(object);
+                drawObjectsOnImage(object);
         } else{
             RCLCPP_INFO(this->get_logger(), "No objects detected.");
         }    
@@ -221,6 +220,55 @@ private:
         timer_->reset(); // Restart the timer
     }
 
+    void drawObjectsOnImage(geometry_msgs::msg::Point object) 
+    {
+        /**
+         * @brief Draw detected objects on an image.
+         * 
+         * This function loads an image, resizes it, and draws the detected objects on the image.
+         * The objects are represented as red circles on the image.
+         * 
+         * @param object The detected object to draw on the image.
+         */
+        // Load the image
+        cv::Mat image = cv::imread(map_png_path_, cv::IMREAD_COLOR);
+        if (image.empty()) {
+            RCLCPP_ERROR(this->get_logger(), "Could not open or find the image");
+            return;
+        }
+
+        // Dimensions of the original image
+        double originalWidth = image.cols;
+        double originalHeight = image.rows;
+
+        // Center of the image
+        double centerX = originalWidth / 2.0;
+        double centerY = originalHeight / 2.0;
+
+        double scale = originalWidth / 10.0; // Scale factor for conversion
+        // std::cout << originalWidth << " " << originalHeight << std::endl;
+        // Convert world coordinates to pixel coordinates
+        cv::Point objectPosition = obs.worldToPixel(object.x, object.y, centerX, centerY, scale);
+
+        // Resizing the image
+        cv::Size targetSize(500, 550);
+        cv::Mat resizedImage;
+        cv::resize(image, resizedImage, targetSize);
+
+        // Adjust the object's position according to the resized image
+        double resizeScaleX = targetSize.width / originalWidth;
+        double resizeScaleY = targetSize.height / originalHeight;
+        cv::Point resizedPosition(static_cast<int>(objectPosition.x * resizeScaleX), static_cast<int>(objectPosition.y * resizeScaleY));
+
+        // Draw the circle at the calculated position
+        // Draw the object on the resized image
+        cv::circle(resizedImage, resizedPosition, 10, cv::Scalar(0, 0, 255), -1); // Red circle for visibility
+
+        // Show the image
+        cv::imshow("Detected Objects", resizedImage);
+        cv::waitKey(0); // Pause to display the image
+    }
+
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr velocity_publisher_;
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odometry_subscriber_;
     rclcpp::TimerBase::SharedPtr timer_;
@@ -260,6 +308,8 @@ private:
     // Mutexes
     std::mutex amclMutex_;
     std::mutex laserMutex_;
+
+    ObjectDetection obs;
 };
 
 
