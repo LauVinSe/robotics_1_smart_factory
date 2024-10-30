@@ -28,11 +28,11 @@ find_package(yaml-cpp REQUIRED)
 
 # For Sprint
 add_executable(map_overlay src/sprint/map_overlay.cpp)
-add_executable(object_detection src/sprint/object_detection.cpp)
+# add_executable(object_detection src/sprint/object_detection.cpp)
 add_executable(compare_maps src/sprint/compare_maps.cpp)
 
 ament_target_dependencies(map_overlay rclcpp std_msgs sensor_msgs nav_msgs tf2 tf2_ros tf2_geometry_msgs cv_bridge image_transport OpenCV)
-ament_target_dependencies(object_detection rclcpp std_msgs sensor_msgs nav_msgs tf2 tf2_ros tf2_geometry_msgs cv_bridge image_transport OpenCV visualization_msgs)
+# ament_target_dependencies(object_detection rclcpp std_msgs sensor_msgs nav_msgs tf2 tf2_ros tf2_geometry_msgs cv_bridge image_transport OpenCV visualization_msgs)
 ament_target_dependencies(compare_maps rclcpp std_msgs sensor_msgs nav_msgs tf2 tf2_ros tf2_geometry_msgs cv_bridge image_transport OpenCV visualization_msgs)
 
 # Project-specific libraries
@@ -51,10 +51,13 @@ target_link_libraries(warehouse_manager yaml-cpp)  # Link yaml-cpp here if neede
 add_library(alley src/alley.cpp)
 ament_target_dependencies(alley rclcpp std_msgs)
 
+add_library(object_detection src/object_detection.cpp)
+ament_target_dependencies(object_detection rclcpp std_msgs sensor_msgs nav_msgs tf2 tf2_ros tf2_geometry_msgs cv_bridge image_transport OpenCV visualization_msgs)
+
 # Link the new libraries to the Robot Controller Test executable
 add_executable(robot_controller_test src/robot_controller_test.cpp)
-target_link_libraries(robot_controller_test location_manager robot_controller warehouse_manager alley yaml-cpp)
-ament_target_dependencies(robot_controller_test rclcpp geometry_msgs tf2 tf2_geometry_msgs nav_msgs nav2_msgs rclcpp_action yaml-cpp)
+target_link_libraries(robot_controller_test location_manager robot_controller warehouse_manager alley yaml-cpp object_detection)
+ament_target_dependencies(robot_controller_test rclcpp std_msgs sensor_msgs nav_msgs nav2_msgs geometry_msgs tf2 tf2_ros tf2_geometry_msgs rclcpp_action yaml-cpp cv_bridge image_transport OpenCV visualization_msgs)
 
 # Include directories for header files
 include_directories(
