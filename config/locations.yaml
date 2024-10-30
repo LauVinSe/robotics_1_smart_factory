@@ -2,6 +2,15 @@ locations:
 
   ### ARRIVAL
 
+  ## Location of the start of the project
+  starting_point:
+    position:
+      x: 3.5  
+      y: -4.5  
+      z: 0.0
+    orientation:
+      yaw: 180  # yaw in degrees (converted from ~180 radians)
+
   ## Location of shelves in the entry point (where there are robot arm and conveyor)
   entry_shelf_raw:
     position:
@@ -63,6 +72,14 @@ locations:
       z: 0.0
     orientation:
       yaw: 90  # yaw in degrees (converted from ~1.57 radians)
+      
+   transit_in_shelf_5: #the one space in the middle
+    position:
+      x: -0.5
+      y: -2.5 # (adj)
+      z: 0.0
+    orientation:
+      yaw: 90  # yaw in degrees (converted from ~1.57 radians)
 
   # Out Side (from the entry point)
   # Left Side
@@ -72,7 +89,7 @@ locations:
       y: -0.5 # (adj)
       z: 0.0
     orientation:
-      yaw: -90  # yaw in degrees (converted from ~-1.57 radians)
+      yaw: 90  # yaw in degrees (converted from ~-1.57 radians)
 
   transit_out_shelf_2:
     position:
@@ -80,7 +97,7 @@ locations:
       y: -0.5 # (adj)
       z: 0.0
     orientation:
-      yaw: -90  # yaw in degrees (converted from ~-1.57 radians)
+      yaw: 90  # yaw in degrees (converted from ~-1.57 radians)
 
   # Right Side
   transit_out_shelf_3:
@@ -89,7 +106,7 @@ locations:
       y: -0.5 # (adj)
       z: 0.0
     orientation:
-      yaw: -90  # yaw in degrees (converted from ~-1.57 radians)
+      yaw: 90  # yaw in degrees (converted from ~-1.57 radians)
 
   transit_out_shelf_4:
     position:
@@ -97,7 +114,15 @@ locations:
       y: -0.5 # (adj)
       z: 0.0
     orientation:
-      yaw: -90  # yaw in degrees (converted from ~-1.57 radians)
+      yaw: 90  # yaw in degrees (converted from ~-1.57 radians)
+      
+    transit_out_shelf_5: #the one space in the middle
+    position:
+      x: 0
+      y: -0.5 # (adj)
+      z: 0.0
+    orientation:
+      yaw: 90  # yaw in degrees (converted from ~1.57 radians)
 
   # Shelves location for shelf storage
 
@@ -167,10 +192,216 @@ locations:
     orientation:
       yaw: 180  # Left (converted from ~3.14 radians)
 
-  waypoint_arr_5:
+  ## Boxes location for pickup
+
+  pickup_1:
     position:
-      x: 3.5
+      x: -1.5
       y: -4.5
       z: 0.0
     orientation:
-      yaw: 180  # yaw in degrees (converted from ~3.14 radians)
+      yaw: 180 # Left (converted from ~3.14 radians)
+
+  pickup_2:
+    position:
+      x: -2.5
+      y: -5.5
+      z: 0.0
+    orientation:
+      yaw: 180  # Left (converted from ~3.14 radians)
+
+  pickup_3:
+    position:
+      x: -2.5
+      y: -3.5
+      z: 0.0
+    orientation:
+      yaw: 180  # Left (converted from ~3.14 radians)
+
+  ## Boxes location for pickup but rotated
+
+  pickup_1_rotate:
+    position:
+      x: -1.5
+      y: -4.5
+      z: 0.0
+    orientation:
+      yaw: 0 # Right
+
+  pickup_2_rotate:
+    position:
+      x: -2.5
+      y: -5.5
+      z: 0.0
+    orientation:
+      yaw: 0 # Right
+
+  pickup_3_rotate:
+    position:
+      x: -2.5
+      y: -3.5
+      z: 0.0
+    orientation:
+      yaw: 0 # Right
+      
+  # Box Delivering in transit
+  
+  Delivering_1:
+    position:
+      x: -1.5
+      y: -1.5 # (adj)
+      z: 0.0
+    orientation:
+      yaw: 90  # yaw in degrees (converted from ~-1.57 radians)
+
+  Delivering_2:
+    position:
+      x: -0.5
+      y: -1.5 # (adj)
+      z: 0.0
+    orientation:
+      yaw: 90  # yaw in degrees (converted from ~-1.57 radians)
+      
+   Delivering_3: #the one space in the middle
+    position:
+      x: 1.5
+      y: -1.5 # (adj)
+      z: 0.0
+    orientation:
+      yaw: 90  # yaw in degrees (converted from ~1.57 radians)
+      
+   ## Waypoint to enter storage area/goal
+
+  waypoint_goal_1:
+    position:
+      x: 3.5
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 180 # Left (converted from ~3.14 radians)
+
+  waypoint_goal_2:
+    position:
+      x: 0.0
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 180  # Left (converted from ~3.14 radians)
+
+  waypoint_goal_3:
+    position:
+      x: 0
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 0    # Right
+      
+  waypoint_goal_4:
+    position:
+      x: -3.5
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 0    # Right
+      
+   ## Dropping the shelves in the storage
+
+  goal_1:
+    position:
+      x: 2.5
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 180 # Left (converted from ~3.14 radians)
+
+  goal_2:
+    position:
+      x: -1.5
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 180  # Left (converted from ~3.14 radians)
+
+  goal_3:
+    position:
+      x: 1.5
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 0    # Right
+      
+  goal_4:
+    position:
+      x: -2.5
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 0    # Right
+      
+   ## rotate position of goal
+
+  goal_1_rotate:
+    position:
+      x: 2.5
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 0    # Right
+
+  goal_2_rotate:
+    position:
+      x: -1.5
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 0    # Right
+
+  goal_3_rotate:
+    position:
+      x: 1.5
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 180 # Left (converted from ~3.14 radians)
+      
+  goal_4_rotate:
+    position:
+      x: -2.5
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 180 # Left (converted from ~3.14 radians)
+      
+   ## Exit the shelves
+
+  exit_1:
+    position:
+      x: 3.5
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 0    # Right
+
+  exit_2:
+    position:
+      x: 0.0
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 0    # Right
+
+  exit_3:
+    position:
+      x: 0
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 180 # Left (converted from ~3.14 radians)
+      
+  exit_4:
+    position:
+      x: -3.5
+      y: 1.5
+      z: 0.0
+    orientation:
+      yaw: 180 # Left (converted from ~3.14 radians)     
