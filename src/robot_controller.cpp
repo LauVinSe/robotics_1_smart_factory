@@ -19,31 +19,57 @@ RobotController::RobotController(const std::shared_ptr<LocationManager> &locatio
 /**
  * Sends the robot to the specified location by retrieving the pose from LocationManager
  * and sending it as a goal to the Nav2 action server.
+ * This method now waits for the task to complete before returning.
  */
-void RobotController::send_robot_to_location(const std::string &location_name) {
-    // Get the pose for the specified location
+// Function to send the robot to a location and wait for the result
+bool RobotController::send_robot_to_location(const std::string &location_name) {
     auto pose = location_manager_->get_location(location_name);
-
-    // Create a goal message and set the pose
     auto goal_msg = NavigateToPose::Goal();
-    goal_msg.pose.header.frame_id = "map";    // or appropriate frame
-    goal_msg.pose.header.stamp = this->now(); // Set the timestamp
+    goal_msg.pose.header.frame_id = "map";
+    goal_msg.pose.header.stamp = this->now();
     goal_msg.pose.pose = pose;
 
-    RCLCPP_INFO(this->get_logger(), "Pose to send: x=%.2f, y=%.2f", pose.position.x, pose.position.y);
+    RCLCPP_INFO(this->get_logger(), "Sending robot to location: %s", location_name.c_str());
 
+    auto goal_handle_future = nav_to_pose_client_->async_send_goal(goal_msg);
+    // Wait for the server to accept the goal
+    if (rclcpp::spin_until_future_complete(this->get_node_base_interface(), goal_handle_future) !=
+        rclcpp::FutureReturnCode::SUCCESS) {
+        RCLCPP_ERROR(this->get_logger(), "Send goal call failed : %s", location_name.c_str());
+        return false;
+    }
 
-    RCLCPP_INFO(this->get_logger(), "Sending goal to location: %s", location_name.c_str());
+    auto goal_handle = goal_handle_future.get();
+    if (!goal_handle) {
+        RCLCPP_ERROR(this->get_logger(), "Goal was rejected by server");
+        return false;
+    }
 
-    // Set up goal options and send the goal
-    auto send_goal_options = rclcpp_action::Client<NavigateToPose>::SendGoalOptions();
-    send_goal_options.goal_response_callback = std::bind(&RobotController::goal_response_callback, this, std::placeholders::_1);
-    send_goal_options.feedback_callback = std::bind(&RobotController::feedback_callback, this, std::placeholders::_1, std::placeholders::_2);
-    send_goal_options.result_callback = std::bind(&RobotController::result_callback, this, std::placeholders::_1);
+    // Wait for the result of the goal
+    auto result_future = nav_to_pose_client_->async_get_result(goal_handle);
+    if (rclcpp::spin_until_future_complete(this->get_node_base_interface(), result_future) !=
+        rclcpp::FutureReturnCode::SUCCESS) {
+        RCLCPP_ERROR(this->get_logger(), "Getting result failed : %s", location_name.c_str());
+        return false;
+    }
 
-    // Asynchronously send the goal to the action server
-    nav_to_pose_client_->async_send_goal(goal_msg, send_goal_options);
+    auto result = result_future.get();
+    switch (result.code) {
+        case rclcpp_action::ResultCode::SUCCEEDED:
+            RCLCPP_INFO(this->get_logger(), "Goal reached successfully: %s", location_name.c_str());
+            return true;
+        case rclcpp_action::ResultCode::ABORTED:
+            RCLCPP_ERROR(this->get_logger(), "Goal was aborted: %s", location_name.c_str());
+            return false;
+        case rclcpp_action::ResultCode::CANCELED:
+            RCLCPP_WARN(this->get_logger(), "Goal was canceled: %s", location_name.c_str());
+            return false;
+        default:
+            RCLCPP_ERROR(this->get_logger(), "Unknown result code for the goal: %s", location_name.c_str());
+            return false;
+    }
 }
+
 
 /**
  * Callback function that is called when the action server responds to the goal request.
@@ -63,7 +89,6 @@ void RobotController::goal_response_callback(std::shared_ptr<GoalHandleNavigateT
  */
 void RobotController::feedback_callback(GoalHandleNavigateToPose::SharedPtr, const std::shared_ptr<const NavigateToPose::Feedback> feedback) {
     RCLCPP_INFO(this->get_logger(), "Received feedback: %.2f meters remaining to goal", feedback->distance_remaining);
-
 }
 
 /**
@@ -86,3 +111,4 @@ void RobotController::result_callback(const GoalHandleNavigateToPose::WrappedRes
             break;
     }
 }
+

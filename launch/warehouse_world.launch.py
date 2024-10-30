@@ -15,8 +15,9 @@ def generate_launch_description():
 
     # Set up configurations
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
-    x_pose = LaunchConfiguration('x_pose', default='0.0')
-    y_pose = LaunchConfiguration('y_pose', default='0.0')
+    x_pose = LaunchConfiguration('x_pose', default='3.5')
+    y_pose = LaunchConfiguration('y_pose', default='-4.5')
+    yaw = LaunchConfiguration('yaw', default='3.14159')
 
     # Define the path to your custom world file
     world = os.path.join(
@@ -55,7 +56,8 @@ def generate_launch_description():
         ),
         launch_arguments={
             'x_pose': x_pose,
-            'y_pose': y_pose
+            'y_pose': y_pose,
+            'yaw_pose': yaw 
         }.items()
     )
 
