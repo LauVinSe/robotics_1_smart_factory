@@ -31,10 +31,10 @@ public:
             "/odom", 10, std::bind(&TurtleBotMoveToGoal::odom_callback, this, std::placeholders::_1));
 
         laser_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
-            "/scan", 10, std::bind(&ObjectDetection::laserCallback, this, std::placeholders::_1));
+            "/scan", 10, std::bind(&TurtleBotMoveToGoal::laserCallback, this, std::placeholders::_1));
 
         amcl_sub_ = this->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
-            "/amcl_pose", 10, std::bind(&ObjectDetection::amclCallback, this, std::placeholders::_1));
+            "/amcl_pose", 10, std::bind(&TurtleBotMoveToGoal::amclCallback, this, std::placeholders::_1));
 
         pubMarker_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("/object_marker", 10);
 
@@ -81,14 +81,16 @@ private:
         auto amcl_pose = amcl_;
         amclMutex_.unlock();
         
+        ObjectDetection obs;
+
         // Detect segments in the laser scan data
-        std::vector<Segment> segments = ObjectDetection::detectSegments(laserScan_,amcl_pose);
+        std::vector<Segment> segments = obs.detectSegments(laserScan_,amcl_pose);
         // Report how many segments were found
         RCLCPP_INFO(this->get_logger(), "Number of segments detected: %zu", segments.size());
 
         // Detect objects
         std::vector<ObjectStats> objects_;
-        bool foundObjects = ObjectDetection::detectObjects(segments, objects_);
+        bool foundObjects = obs.detectObjects(segments, objects_);
         if (foundObjects){
              RCLCPP_INFO_STREAM(this->get_logger(), "Found objects: " << objects_.size());
 
@@ -96,15 +98,15 @@ private:
                 std::lock_guard<std::mutex> lock1(amclMutex_);
                 auto amcl = amcl_;
                 amclMutex_.unlock();
-                auto object = ObjectDetection::localToGlobal(objects_.back().midpoint, amcl);
+                auto object = obs.localToGlobal(objects_.back().midpoint, amcl);
                 visualization_msgs::msg::MarkerArray markerArray;
-                visualization_msgs::msg::Marker marker = ObjectDetection::produceMarkerPerson(object);
+                visualization_msgs::msg::Marker marker = obs.produceMarkerPerson(object);
                 markerArray.markers.push_back(marker);
                 pubMarker_->publish(markerArray);
                 RCLCPP_INFO_STREAM(this->get_logger(), "Object at x: " << object.x << " y: " << object.y);
 
                 // Draw objects on the image
-                ObjectDetection::drawObjectsOnImage(object);
+                obs.drawObjectsOnImage(object);
         } else{
             RCLCPP_INFO(this->get_logger(), "No objects detected.");
         }    

@@ -38,15 +38,17 @@ class ObjectDetection : public rclcpp::Node {
 public:
     ObjectDetection();
 
-private:
     std::vector<Segment> detectSegments(sensor_msgs::msg::LaserScan laserScan, 
                                         geometry_msgs::msg::PoseWithCovarianceStamped amcl_pose);
 
     bool detectObjects(std::vector<Segment> segments, std::vector<ObjectStats>& objects);
 
-    geometry_msgs::msg::Point polarToCart(float range, float angle)
+    bool checkCircularity(const Segment& segment, 
+                        const geometry_msgs::msg::Point& midpoint, double threshold);
 
-    double calculateDistance(geometry_msgs::msg::Point p1, geometry_msgs::msg::Point p2)
+    geometry_msgs::msg::Point polarToCart(float range, float angle);
+
+    double calculateDistance(geometry_msgs::msg::Point p1, geometry_msgs::msg::Point p2);
 
     geometry_msgs::msg::Point localToGlobal(geometry_msgs::msg::Point point, 
                                             geometry_msgs::msg::PoseWithCovarianceStamped amcl_pose);
@@ -59,14 +61,7 @@ private:
 
     void drawObjectsOnImage(geometry_msgs::msg::Point object);
 
-
-
-    // ROS Subscriptions
-    rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr laser_sub_;
-    rclcpp::Subscription<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr amcl_sub_;
-
-    // ROS Publishers
-    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr pubMarker_;
+private:
 
     // Laser data
     sensor_msgs::msg::LaserScan laserScan_;

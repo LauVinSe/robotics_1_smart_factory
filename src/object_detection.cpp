@@ -15,7 +15,7 @@
  * \warning   None
  */
 
-ObjectDetection::ObjectDetection()
+ObjectDetection::ObjectDetection(): Node("object_detection_node")
 {
 
 }
@@ -296,7 +296,7 @@ geometry_msgs::msg::Point ObjectDetection::polarToCart(float range, float angle)
     return cart;
 }
 
-double calculateDistance(geometry_msgs::msg::Point p1, geometry_msgs::msg::Point p2)
+double ObjectDetection::calculateDistance(geometry_msgs::msg::Point p1, geometry_msgs::msg::Point p2)
 {
     /**
      * @brief Calculate the Euclidean distance between two points.
@@ -427,7 +427,7 @@ void ObjectDetection::drawObjectsOnImage(geometry_msgs::msg::Point object) {
          * @param object The detected object to draw on the image.
          */
         // Load the image
-        cv::Mat image = cv::imread(map_png_path, cv::IMREAD_COLOR);
+        cv::Mat image = cv::imread(map_png_path_, cv::IMREAD_COLOR);
         if (image.empty()) {
             RCLCPP_ERROR(this->get_logger(), "Could not open or find the image");
             return;
