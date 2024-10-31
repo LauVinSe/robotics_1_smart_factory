@@ -266,7 +266,7 @@ private:
 
         // Show the image
         cv::imshow("Detected Objects", resizedImage);
-        cv::waitKey(0); // Pause to display the image
+        cv::waitKey(1);
     }
 
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr velocity_publisher_;
