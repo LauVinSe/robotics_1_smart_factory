@@ -3,18 +3,23 @@
 #include <geometry_msgs/msg/twist.hpp>
 #include <nav_msgs/msg/odometry.hpp>
 #include <cmath>
-#include "alley.h"
-#include "robot_controller.h"
+
 #include "warehouse_manager.h"
-#include "location_manager.h"
+#include "robot_controller.h"
+#include "object_detection.h"
 
 using namespace std::chrono_literals;
+std::string map_png_path_ = "/home/samuel/ros2_ws/src/robotics_1_smart_factory/map/warehouse_map.png";
 
 class TurtleBotMoveToGoal : public rclcpp::Node
 {
 public:
-    TurtleBotMoveToGoal(const geometry_msgs::msg::Pose &goal_pose_1, const geometry_msgs::msg::Pose &goal_pose_2) 
-        : Node("turtlebot_move_to_goal"), goal_pose_1_(goal_pose_1), goal_pose_2_(goal_pose_2), current_goal_(goal_pose_1), move_backward_(false), is_aligned_(false), reached_goal_1_(false), reached_goal_2_(false)
+    TurtleBotMoveToGoal(const geometry_msgs::msg::Pose &goal_pose_1, const geometry_msgs::msg::Pose &goal_pose_2):
+    Node("turtlebot_move_to_goal"), 
+    goal_pose_1_(goal_pose_1), goal_pose_2_(goal_pose_2), 
+    current_goal_(goal_pose_1), move_backward_(false), is_aligned_(false), 
+    reached_goal_1_(false), reached_goal_2_(false),
+    amcl_initialized_(false)
     {
         goal_x_ = current_goal_.position.x;
         goal_y_ = current_goal_.position.y;
@@ -25,6 +30,14 @@ public:
         // Subscribe to odometry to get the current position and orientation
         odometry_subscriber_ = this->create_subscription<nav_msgs::msg::Odometry>(
             "/odom", 10, std::bind(&TurtleBotMoveToGoal::odom_callback, this, std::placeholders::_1));
+
+        laser_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
+            "/scan", 10, std::bind(&TurtleBotMoveToGoal::laserCallback, this, std::placeholders::_1));
+
+        amcl_sub_ = this->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
+            "/amcl_pose", 10, std::bind(&TurtleBotMoveToGoal::amclCallback, this, std::placeholders::_1));
+
+        pubMarker_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("/object_marker", 10);
 
         // Timer to control movement towards the goal
         timer_ = this->create_wall_timer(
@@ -43,6 +56,86 @@ public:
     }
 
 private:
+    void laserCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
+    {
+        /**
+         * @brief Callback function for the /scan subscriber.
+         * 
+         * This function is called whenever a new message is received on the /scan topic.
+         * It processes the laser scan data to detect segments and objects in the environment.
+         * The detected objects are published as visualization markers and drawn on an image.
+         * 
+         * @param msg The received LaserScan message.
+         */
+        
+        // Only start detecting segments if AMCL data is collected
+        if (!amcl_initialized_) {
+            RCLCPP_WARN(this->get_logger(), "AMCL data not yet received. Waiting to start detection.");
+            return;
+        }
+
+        std::lock_guard<std::mutex> lock(laserMutex_);
+        laserScan_ = *msg;
+        laserMutex_.unlock();
+        
+        std::lock_guard<std::mutex> lock1(amclMutex_);
+        auto amcl_pose = amcl_;
+        amclMutex_.unlock();
+
+        // Detect segments in the laser scan data
+        std::vector<Segment> segments = obs.detectSegments(laserScan_,amcl_pose);
+        // Report how many segments were found
+        RCLCPP_INFO(this->get_logger(), "Number of segments detected: %zu", segments.size());
+
+        // Detect objects
+        std::vector<ObjectStats> objects_;
+        bool foundObjects = obs.detectObjects(segments, objects_);
+        if (foundObjects){
+             RCLCPP_INFO_STREAM(this->get_logger(), "Found objects: " << objects_.size());
+
+                // Get amcl pose
+                std::lock_guard<std::mutex> lock1(amclMutex_);
+                auto amcl = amcl_;
+                amclMutex_.unlock();
+                auto object = obs.localToGlobal(objects_.back().midpoint, amcl);
+                visualization_msgs::msg::MarkerArray markerArray;
+                visualization_msgs::msg::Marker marker = obs.produceMarkerPerson(object);
+                markerArray.markers.push_back(marker);
+                pubMarker_->publish(markerArray);
+                RCLCPP_INFO_STREAM(this->get_logger(), "Object at x: " << object.x << " y: " << object.y);
+
+                // Draw objects on the image
+                drawObjectsOnImage(object);
+        } else{
+            RCLCPP_INFO(this->get_logger(), "No objects detected.");
+        }    
+    }
+
+    // Callback for AMCL pose
+    void amclCallback(const geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr amclMsg)
+    {
+        /**
+         * @brief Callback function for the /amcl_pose subscriber.
+         * 
+         * This function is called whenever a new message is received on the /amcl_pose topic.
+         * It processes the AMCL pose data to extract the robot's position and orientation.
+         * 
+         * @param amclMsg The received PoseWithCovarianceStamped message.
+         */
+
+        std::lock_guard<std::mutex> lock(amclMutex_);
+        amcl_ = *amclMsg;
+
+        // Extract the AMCL pose and orientation
+        amclPose_x_ = amcl_.pose.pose.position.x;
+        amclPose_y_ = amcl_.pose.pose.position.y;
+        amclYaw_ = tf2::getYaw(amcl_.pose.pose.orientation);
+
+        // Set the flag indicating AMCL data has been initialized
+        amcl_initialized_ = true;
+        RCLCPP_INFO(this->get_logger(), "AMCL data received. Starting segment detection.");
+    }
+
     void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg)
     {
         current_x_ = msg->pose.pose.position.x;
@@ -127,6 +220,55 @@ private:
         timer_->reset(); // Restart the timer
     }
 
+    void drawObjectsOnImage(geometry_msgs::msg::Point object) 
+    {
+        /**
+         * @brief Draw detected objects on an image.
+         * 
+         * This function loads an image, resizes it, and draws the detected objects on the image.
+         * The objects are represented as red circles on the image.
+         * 
+         * @param object The detected object to draw on the image.
+         */
+        // Load the image
+        cv::Mat image = cv::imread(map_png_path_, cv::IMREAD_COLOR);
+        if (image.empty()) {
+            RCLCPP_ERROR(this->get_logger(), "Could not open or find the image");
+            return;
+        }
+
+        // Dimensions of the original image
+        double originalWidth = image.cols;
+        double originalHeight = image.rows;
+
+        // Center of the image
+        double centerX = originalWidth / 2.0;
+        double centerY = originalHeight / 2.0;
+
+        double scale = originalWidth / 10.0; // Scale factor for conversion
+        // std::cout << originalWidth << " " << originalHeight << std::endl;
+        // Convert world coordinates to pixel coordinates
+        cv::Point objectPosition = obs.worldToPixel(object.x, object.y, centerX, centerY, scale);
+
+        // Resizing the image
+        cv::Size targetSize(500, 550);
+        cv::Mat resizedImage;
+        cv::resize(image, resizedImage, targetSize);
+
+        // Adjust the object's position according to the resized image
+        double resizeScaleX = targetSize.width / originalWidth;
+        double resizeScaleY = targetSize.height / originalHeight;
+        cv::Point resizedPosition(static_cast<int>(objectPosition.x * resizeScaleX), static_cast<int>(objectPosition.y * resizeScaleY));
+
+        // Draw the circle at the calculated position
+        // Draw the object on the resized image
+        cv::circle(resizedImage, resizedPosition, 10, cv::Scalar(0, 0, 255), -1); // Red circle for visibility
+
+        // Show the image
+        cv::imshow("Detected Objects", resizedImage);
+        cv::waitKey(1);
+    }
+
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr velocity_publisher_;
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odometry_subscriber_;
     rclcpp::TimerBase::SharedPtr timer_;
@@ -143,6 +285,31 @@ private:
     bool is_aligned_;
     bool reached_goal_1_;
     bool reached_goal_2_; // Flag to indicate both goals are reached
+
+    // ROS Subscriptions
+    rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr laser_sub_;
+    rclcpp::Subscription<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr amcl_sub_;
+
+    // ROS Publishers
+    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr pubMarker_;
+
+    // Flag to check if AMCL data is initialized
+    bool amcl_initialized_;
+
+    // AMCL data
+    geometry_msgs::msg::PoseWithCovarianceStamped amcl_;
+    double amclPose_x_ = 0.0;
+    double amclPose_y_ = 0.0;
+    double amclYaw_ = 0.0;
+
+    // Laser data
+    sensor_msgs::msg::LaserScan laserScan_;
+
+    // Mutexes
+    std::mutex amclMutex_;
+    std::mutex laserMutex_;
+
+    ObjectDetection obs;
 };
 
 
